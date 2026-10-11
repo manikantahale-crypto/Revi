@@ -1,0 +1,1397 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <title>CheesyClicks | Share Your Experience</title>
+  <meta name="description" content="Share your authentic feedback for CheesyClicks event photobooths on Google." />
+
+  <!-- Premium Font: Plus Jakarta Sans -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap"
+    rel="stylesheet" />
+
+  <style>
+    /* =========================================================================
+       CSS RESET & BASE CONFIGURATION
+       ========================================================================= */
+    *,
+    *::before,
+    *::after {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    html,
+    body {
+      width: 100%;
+      min-height: 100%;
+      background-color: #F7F0E5;
+      font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+      overflow-x: hidden;
+    }
+
+    body {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      min-height: 100dvh;
+      padding: 0;
+    }
+
+    /* =========================================================================
+       CANVAS CONTAINER (PIXEL-PERFECT ALIGNMENT WITH Background_IMG.png)
+       Image Dimensions: 941px × 1672px (Aspect Ratio: 941 / 1672)
+       ========================================================================= */
+    .app-viewport {
+      width: 100%;
+      max-width: 460px;
+      position: relative;
+      margin: 0 auto;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+
+    .canvas-container {
+      position: relative;
+      width: 100%;
+      aspect-ratio: 941 / 1672;
+      overflow: hidden;
+      box-shadow: 0 16px 40px -10px rgba(80, 55, 25, 0.15);
+    }
+
+    .bg-img {
+      width: 100%;
+      height: 100%;
+      display: block;
+      object-fit: fill;
+      pointer-events: none;
+      user-select: none;
+      -webkit-user-drag: none;
+    }
+
+    /* Interactive Functional Overlay Layer */
+    .overlay-layer {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      z-index: 10;
+    }
+
+    /* =========================================================================
+       FUNCTIONAL EDITABLE REVIEW TEXTAREA
+       Position: top 47.73%, left 16.79%, width 66.31%, height 15.43%
+       ========================================================================= */
+    .review-textarea {
+      position: absolute;
+      left: 16.79%;
+      top: 47.73%;
+      width: 66.31%;
+      height: 15.43%;
+      background-color: #FAF6EF;
+      color: #101D35;
+      font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+      font-size: clamp(0.92rem, 3.8vw, 1.05rem);
+      line-height: 1.48;
+      padding: 4% 13% 4% 4.5%;
+      border-radius: clamp(14px, 3.5vw, 20px);
+      border: 1.5px solid transparent;
+      outline: none;
+      resize: none;
+      z-index: 15;
+      transition: border-color 0.2s ease, box-shadow 0.2s ease, background-color 0.2s ease;
+    }
+
+    .review-textarea:focus {
+      background-color: #FFFFFF;
+      border-color: #C99543;
+      box-shadow: 0 0 0 2.5px rgba(201, 149, 67, 0.2);
+    }
+
+    /* =========================================================================
+       FUNCTIONAL CIRCULAR REFRESH / ROTATE BUTTON
+       Position: top 48.05%, left 73.55%, width 8.2%
+       ========================================================================= */
+    .rotate-draft-btn {
+      position: absolute;
+      left: 73.55%;
+      top: 48.05%;
+      width: 8.2%;
+      aspect-ratio: 1 / 1;
+      border-radius: 50%;
+      background: #FFFDF9;
+      border: 1.5px solid #E4CCAA;
+      color: #C99543;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 0;
+      box-shadow: 0 2px 6px rgba(180, 140, 80, 0.18);
+      z-index: 20;
+      transition: transform 0.22s ease, background-color 0.2s ease, box-shadow 0.2s ease;
+      touch-action: manipulation;
+    }
+
+    .rotate-draft-btn:hover {
+      background: #FBF6EE;
+      transform: scale(1.08);
+      box-shadow: 0 3px 8px rgba(180, 140, 80, 0.28);
+    }
+
+    .rotate-draft-btn:active {
+      transform: scale(0.92);
+    }
+
+    .rotate-icon-svg {
+      width: 58%;
+      height: 58%;
+      stroke: currentColor;
+      stroke-width: 2.2;
+      fill: none;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+      transition: transform 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
+    }
+
+    .rotate-draft-btn.spinning .rotate-icon-svg {
+      transform: rotate(360deg);
+    }
+
+    /* =========================================================================
+       FUNCTIONAL "COPY & POST REVIEW" BUTTON OVERLAY
+       Position: top 65.79%, left 17.22%, width 65.46%, height 7.48%
+       ========================================================================= */
+    .copy-post-btn {
+      position: absolute;
+      left: 17.22%;
+      top: 65.79%;
+      width: 65.46%;
+      height: 7.48%;
+      border-radius: 9999px;
+      background: transparent;
+      border: 1.5px solid transparent;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 25;
+      touch-action: manipulation;
+      transition: background 0.2s ease, transform 0.15s ease, box-shadow 0.2s ease;
+      overflow: hidden;
+    }
+
+    .copy-post-btn:hover {
+      background: rgba(255, 255, 255, 0.08);
+      box-shadow: 0 0 16px rgba(201, 149, 67, 0.3);
+    }
+
+    .copy-post-btn:active {
+      transform: scale(0.985);
+    }
+
+    /* Copied visual confirmation state */
+    .copy-post-btn.copied {
+      background: rgba(13, 40, 24, 0.95);
+      border-color: #52B788;
+      box-shadow: 0 0 20px rgba(82, 183, 136, 0.4);
+    }
+
+    .copied-feedback-text {
+      display: none;
+      color: #FFFFFF;
+      font-size: clamp(0.92rem, 3.6vw, 1.05rem);
+      font-weight: 700;
+      letter-spacing: 0.02em;
+    }
+
+    .copy-post-btn.copied .copied-feedback-text {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+    }
+  </style>
+</head>
+
+<body>
+
+  <div class="app-viewport">
+    <div class="canvas-container">
+      <!-- Original High-Fidelity Background Graphic -->
+      <img src="assets/Background_IMG.png" alt="CheesyClicks Photobooth Review" class="bg-img" />
+
+      <!-- Interactive Overlay Layer -->
+      <div class="overlay-layer">
+
+        <!-- Functional Editable Textarea -->
+        <textarea id="reviewText" class="review-textarea" aria-label="Your review draft"
+          spellcheck="false">Had a great time at CheesyClicks!</textarea>
+
+        <!-- Functional Circular Rotate Button -->
+        <button type="button" id="rotateDraftBtn" class="rotate-draft-btn" title="Try another draft"
+          aria-label="Try another draft">
+          <svg viewBox="0 0 24 24" class="rotate-icon-svg" aria-hidden="true">
+            <path d="M21 12a9 9 0 0 0-15.5-6.36L3 8m0-5v5h5M3 12a9 9 0 0 0 15.5 6.36L21 16m0 5v-5h-5"></path>
+          </svg>
+        </button>
+
+        <!-- Functional Copy & Post Review CTA -->
+        <button type="button" id="copyPostBtn" class="copy-post-btn" aria-label="Copy and Post Review">
+          <span class="copied-feedback-text">
+            <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="#52B788" stroke-width="2.5"
+              stroke-linecap="round" stroke-linejoin="round">
+              <polyline points="20 6 9 17 4 12"></polyline>
+            </svg>
+            Copied! Opening Google...
+          </span>
+        </button>
+
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // =========================================================================
+    // 1. COLLECTION OF SHORT REVIEW DRAFTS (1,000 EXPRESSIVE & CASUAL SUGGESTIONS)
+    // Varied in length (2-8 words), style, Gen Z expressions, shortcuts, & casing.
+    // =========================================================================
+    const REVIEW_DRAFTS = [
+      "Had a great time at CheesyClicks!",
+      "Such a fun photobooth experience!",
+      "Really enjoyed our time here",
+      "Everything went smoothly from start to finish.",
+      "Fantastic photobooth service for our event!",
+      "So glad we booked CheesyClicks",
+      "An absolute hit at our party!",
+      "Wonderful experience, would happily book again!",
+      "Loved every moment at the photobooth",
+      "The photobooth added so much joy!",
+      "Great entertainment for all our guests",
+      "A brilliant addition to our celebration!",
+      "Everyone had a blast taking photos",
+      "Super smooth experience and great fun",
+      "Can't recommend CheesyClicks enough!",
+      "The team was friendly and helpful.",
+      "Wonderful staff who made everyone smile",
+      "Warm, polite, and very attentive team!",
+      "Super friendly staff throughout the event",
+      "The attendant was welcoming and patient.",
+      "Professional, friendly, and very accommodating team",
+      "Loved how helpful the crew was!",
+      "Staff was respectful, kind, and organized.",
+      "Such sweet and helpful booth attendants",
+      "Great energy from the entire team!",
+      "The staff kept everything running smoothly.",
+      "Friendly faces making everyone feel comfortable",
+      "Courteous and attentive from start to finish.",
+      "Caring staff who went above and beyond",
+      "Really appreciated the team's friendly support.",
+      "The props made our photos extra fun.",
+      "Loved the personalized photo props!",
+      "Huge selection of creative, hilarious props",
+      "Custom name props were a fantastic touch.",
+      "The customized props made it so special!",
+      "Loved all the quirky photo props",
+      "Great variety of props for everyone.",
+      "Fun props that kept guests laughing!",
+      "The personalized signage was a great detail.",
+      "Props were clean, sturdy, and hilarious",
+      "Loved holding the custom name props.",
+      "Creative props for every kind of pose",
+      "The prop collection was top notch!",
+      "Super fun props, everyone loved them",
+      "Awesome custom props made for our event!",
+      "Beautiful prints and lovely presentation.",
+      "Photo prints were crisp and vibrant!",
+      "High quality print paper that lasts",
+      "Loved how fast the prints came out.",
+      "Picture quality was clear and sharp.",
+      "Great lighting and crystal clear photo prints",
+      "The physical photo prints looked fantastic!",
+      "Gorgeous print quality on every strip",
+      "Sharp photos and rich color prints.",
+      "Loved taking home the printed photo strips",
+      "Impressive print clarity and quick processing.",
+      "Colors on the photo prints popped beautifully!",
+      "High quality glossy prints to keep forever",
+      "Crisp prints made wonderful event keepsakes.",
+      "Super fast, high definition photo prints!",
+      "The photo frames looked beautiful.",
+      "Really sturdy, elegant photo frames!",
+      "Loved having sturdy frames for our photos",
+      "Frames were a lovely keepsake for guests.",
+      "High quality frames to protect our memories",
+      "The frames added an elegant finishing touch.",
+      "Sturdy photo frames that looked very classy",
+      "Loved the sleek photo frame presentation.",
+      "Such pretty frames to take home",
+      "Solid frames, great quality throughout.",
+      "The photo frames made great souvenirs",
+      "Clean presentation and solid, sturdy frames.",
+      "The photobooth setup looked stunning!",
+      "Modern, sleek booth that looked amazing",
+      "Attractive booth setup matched our theme nicely.",
+      "The backdrop and lighting looked perfect",
+      "Very neat and stylish photobooth setup.",
+      "Eye-catching booth that drew everyone in",
+      "Clean, modern, and beautifully decorated booth.",
+      "Loved the spacious booth and backdrop design",
+      "The lighting inside the booth was flattering.",
+      "Classy photobooth look, very aesthetically pleasing",
+      "Beautiful backdrop and spotless photobooth setup.",
+      "Elegant photobooth that fit our venue seamlessly",
+      "Such a fun family experience!",
+      "The whole family loved taking photos together",
+      "Kids and grandparents all enjoyed the booth.",
+      "A wonderful activity for all age groups",
+      "Our entire family had so much fun.",
+      "Loved seeing the family laugh together here",
+      "Perfect entertainment for families and friends.",
+      "Family-friendly fun from start to finish",
+      "Brought our family together for great photos.",
+      "Both adults and children had a blast!",
+      "Great memories made with the whole family.",
+      "Everyone in our group thoroughly enjoyed it",
+      "A lovely family-friendly photobooth experience.",
+      "Great memories captured in one place.",
+      "Unforgettable moments captured on print",
+      "Cherished memories from a wonderful party.",
+      "Created memories we will treasure forever",
+      "Loved looking back at all the photos!",
+      "Such a memorable highlight of our celebration",
+      "Captured genuine laughter and joyful moments.",
+      "Gave our guests memories they can keep",
+      "The best keepsake from our special day.",
+      "Memorable, delightful, and worth every second!",
+      "Photobooth pictures turned out so memorable",
+      "Precious memories created with our loved ones.",
+      "A delightful keepsake for all who attended",
+      "just amazing",
+      "absolutely incredible",
+      "super fun",
+      "loved everything",
+      "fab experience",
+      "cute pictures",
+      "great service",
+      "perfect memories",
+      "totally obsessed",
+      "highly recommend",
+      "wow factor",
+      "beautiful prints",
+      "best vibes",
+      "photo magic",
+      "so aesthetic",
+      "pure joy",
+      "party highlight",
+      "instant memories",
+      "crisp prints",
+      "sturdy frames",
+      "hilarious props",
+      "creative signs",
+      "friendly attendants",
+      "top tier",
+      "total hit",
+      "unmatched fun",
+      "sweet keepsakes",
+      "flawless setup",
+      "picture perfect",
+      "great times",
+      "loved it!",
+      "so good",
+      "pure perfection",
+      "crowd pleaser",
+      "stellar service",
+      "so sleek",
+      "loved posing",
+      "epic photos",
+      "memories made",
+      "forever keepsakes",
+      "magic moments",
+      "amazing energy",
+      "vibrant colors",
+      "glossy strips",
+      "neat booth",
+      "warm hospitality",
+      "great laughter",
+      "so fun!",
+      "JUST WOW",
+      "PURE MAGIC",
+      "photo fun",
+      "happy smiles",
+      "family favorite",
+      "instant favorites",
+      "super neat",
+      "loved props",
+      "fun poses",
+      "gorgeous lighting",
+      "super fast",
+      "party favorite",
+      "such fun",
+      "truly wonderful",
+      "clean booth",
+      "awesome team",
+      "hilarious poses",
+      "great shots",
+      "vibrant prints",
+      "top quality",
+      "pure happiness",
+      "super smooth",
+      "endless laughs",
+      "loved CheesyClicks",
+      "photo perfection",
+      "simply stunning",
+      "wonderful setup",
+      "such joy",
+      "unforgettable party",
+      "sweet photos",
+      "amazing photobooth",
+      "super cute",
+      "great memories",
+      "loved frames",
+      "so prompt",
+      "friendly crew",
+      "pure smiles",
+      "fantastic booth",
+      "loved prints",
+      "perfect keepsakes",
+      "super entertaining",
+      "total joy",
+      "awesome prints",
+      "great entertainment",
+      "simply amazing",
+      "pure laughter",
+      "awesome props",
+      "loved booth",
+      "total blast",
+      "best fun",
+      "so lovely",
+      "crowd favorite",
+      "great host",
+      "super happy",
+      "instant joy",
+      "truly special",
+      "family fun",
+      "happy moments",
+      "photo heaven",
+      "epic memories",
+      "stellar booth",
+      "top notch",
+      "superb service",
+      "great atmosphere",
+      "party perfection",
+      "pure gold",
+      "loved magnets",
+      "fun strips",
+      "classy setup",
+      "photo joy",
+      "super vibrant",
+      "smiling faces",
+      "unbeatable fun",
+      "best crew",
+      "loved lighting",
+      "total win",
+      "so cool",
+      "pure entertainment",
+      "amazing quality",
+      "just amazinggggg",
+      "soooo good",
+      "lovvved it",
+      "superrr fun",
+      "reallly nice",
+      "besttt experience",
+      "cutieee pics",
+      "sooo much fun",
+      "literally obsesseddd",
+      "amazinggg photo prints",
+      "loved the props smmm",
+      "wowww such a great booth",
+      "superrr cute photos",
+      "this was sooooo fun",
+      "lovvved the custom signs",
+      "realllly loved the prints",
+      "besttt party entertainment ever",
+      "superrr friendly attendants",
+      "cuttte photo strips",
+      "sooo happy we booked",
+      "lovved taking photos together",
+      "omggg the prints are gorgeous",
+      "such a coool booth setup",
+      "yayyy best photo booth",
+      "lovvved every single photo",
+      "soooo aesthetic and fun",
+      "superrr fast printing",
+      "fabbb photo memories",
+      "reallly loved the photo frames",
+      "amazinggg team and awesome props",
+      "sooo crisp and clear",
+      "lovved the magnetic frames",
+      "wowww loved the picture quality",
+      "besttt keepsakes from our party",
+      "superrr entertaining for our guests",
+      "omggg loved the custom props",
+      "soooo cute for group shots",
+      "reallly great service tonight",
+      "lovved the backdrop so much",
+      "superrr clean and sleek booth",
+      "yayyy loved every picture",
+      "besttt photobooth experience everrr",
+      "sooo much laughter with props",
+      "lovvved the silly hats and glasses",
+      "wowww what a fun experience",
+      "cutieee photo keepsakes to take home",
+      "reallly fun party activity",
+      "lovved the glossy photo strips",
+      "soooo sweet to have printed photos",
+      "superrr helpful booth host",
+      "amazinggg vibes all evening",
+      "lovvved our event photos",
+      "fabbb photobooth for our celebration",
+      "soooo many hilarious poses",
+      "omggg such pretty prints",
+      "lovved the vibrant colors",
+      "realllly neat and stylish setup",
+      "superrr clear picture clarity",
+      "wowww so glad we got this",
+      "cutesttt party favor ever",
+      "lovved every single print",
+      "soooo easy and quick to use",
+      "besttt photobooth setup around",
+      "superrr polite event crew",
+      "lovved the whole photo booth experience",
+      "fabbb memories with the whole group",
+      "soooo glad we had CheesyClicks",
+      "lovvved how fast prints came",
+      "yayyy great photos with friends",
+      "reallly lovely keepsakes for everyone",
+      "besttt photo quality we have seen",
+      "superrr lively and entertaining booth",
+      "lovved holding the name props",
+      "soooo photogenic and clean",
+      "omggg loved the photo strips",
+      "reallly impressive paper quality",
+      "superrr great photobooth host",
+      "fabbb prints to put on fridges",
+      "wowww loved it so much",
+      "soooo fun posing with props",
+      "lovvved our wedding photo strips",
+      "superrr crisp and clear pictures",
+      "besttt party decision we made",
+      "reallly friendly and caring crew",
+      "sooo much fun taking group photos",
+      "lovved all the cute props",
+      "omggg such amazing picture quality",
+      "soooo glad we booked CheesyClicks",
+      "such a vibe",
+      "it's giving premium",
+      "totally obsessed with these pics",
+      "lowkey loved it sm",
+      "fr so good",
+      "10/10 would recommend",
+      "10/10 photobooth experience",
+      "no cap best booth ever",
+      "the photobooth slayed tonight",
+      "main character vibes in the booth",
+      "literal core memory created tonight",
+      "ngl loved it",
+      "too good fr",
+      "photobooth was an absolute vibe",
+      "obsessed with the print quality",
+      "this booth slayed our party",
+      "lowkey the highlight of tonight",
+      "10/10 service and fun props",
+      "it's giving luxury photobooth",
+      "no cap loved every photo",
+      "core memory with best friends",
+      "main character energy all night",
+      "aesthetic pics that look so good",
+      "literally obsessed with our photo strips",
+      "the props slayed so hard",
+      "ngl the clearest prints ever",
+      "vibes were immaculate in the booth",
+      "lowkey obsessed with the custom props",
+      "it's giving celebrity party vibes",
+      "photobooth was top tier fr",
+      "slayed every single photo pose",
+      "pure aesthetic in every picture",
+      "10/10 would book again fr",
+      "no cap the best party memories",
+      "literally living for these photo strips",
+      "core memory with the whole family",
+      "the booth gave main character vibes",
+      "obsessed with our fridge magnets",
+      "ngl staff was super nice",
+      "it's giving high end aesthetic",
+      "lowkey could not stop taking photos",
+      "fr the most fun ever",
+      "photobooth hits different at parties",
+      "obsessed with the funny glasses",
+      "the crew slayed the whole setup",
+      "no cap our guests loved it",
+      "10/10 lighting for every pose",
+      "main character moment in the booth",
+      "literally obsessed with the frames",
+      "ngl best party entertainment around",
+      "the vibe was unmatched tonight",
+      "it's giving studio quality prints",
+      "lowkey best part of our event",
+      "slayed the photo strips fr",
+      "core memory unlocked with the family",
+      "obsessed with the personalized signs",
+      "fr the print quality is crazy",
+      "10/10 photobooth setup and props",
+      "no cap we took so many pictures",
+      "immaculate vibes the entire time",
+      "lowkey loved every single shot",
+      "it's giving chic and modern",
+      "obsessed with the group photos",
+      "ngl the booth was super fun",
+      "photobooth slayed our celebration",
+      "10/10 photo keepsakes to take home",
+      "main character vibes with custom props",
+      "fr loved the whole team",
+      "literally obsessed with our prints",
+      "no cap best photobooth experience",
+      "such an aesthetic booth setup",
+      "lowkey the cutest photo strips",
+      "it's giving timeless memories",
+      "core memory with all our friends",
+      "obsessed with the glossy paper",
+      "ngl loved the prompt service",
+      "slayed our party photos completely",
+      "10/10 friendly and helpful attendant",
+      "fr the clearest photo strips ever",
+      "such immaculate vibes tonight",
+      "lowkey the best photobooth setup",
+      "obsessed with the clear picture resolution",
+      "it's giving VIP event vibes",
+      "10/10 party favor for guests",
+      "no cap the props were hilarious",
+      "main character vibes taking silly poses",
+      "core memory from our wedding party",
+      "ngl totally exceeded our expectations",
+      "slayed from the start to finish",
+      "the photo booth vibe was unreal",
+      "gr8 pics",
+      "thx for the memories",
+      "vry nice experience",
+      "super fun n easy",
+      "pics came out gr8",
+      "loved the setup sm",
+      "def booking again",
+      "fave photobooth ever",
+      "thx for the awesome prints",
+      "super quick n easy",
+      "pics were vry clear",
+      "loved all the props sm",
+      "definitely our fave party activity",
+      "gr8 service from the team",
+      "thx for making our night special",
+      "cool pics n awesome props",
+      "vry helpful booth attendant",
+      "loved the photo strips sm",
+      "def the highlight of the event",
+      "pics look amazing on my fridge",
+      "gr8 memories with the squad",
+      "thx CheesyClicks for the fun",
+      "super cute n funny props",
+      "vry smooth and quick printing",
+      "loved the customized signs sm",
+      "def worth every single penny",
+      "fave event keepsakes by far",
+      "pics came out super crisp",
+      "gr8 team n wonderful setup",
+      "thx for the lovely photo strips",
+      "vry neat and classy booth",
+      "loved posing with friends sm",
+      "def the best photobooth experience",
+      "pics were clear n colorful",
+      "gr8 prints for all guests",
+      "thx for keeping everyone entertained",
+      "super fun n friendly host",
+      "vry happy with our prints",
+      "loved the magnetic frames sm",
+      "def coming back for next party",
+      "pics are top quality fr",
+      "gr8 photobooth setup tonight",
+      "thx for such sweet keepsakes",
+      "vry patient booth attendant tonight",
+      "loved the high resolution sm",
+      "def our fave party feature",
+      "pics came out so bright",
+      "gr8 custom props for photos",
+      "thx for capturing our moments",
+      "super fast n high quality",
+      "vry stylish photobooth setup",
+      "loved the glossy strips sm",
+      "def recommending to all friends",
+      "pics look so clear n sharp",
+      "gr8 fun for the whole fam",
+      "thx for the great memories",
+      "vry polite and attentive crew",
+      "loved our family pictures sm",
+      "def made our night unforgettable",
+      "pics were totally on point",
+      "gr8 service n fast prints",
+      "thx for the fun props",
+      "vry enjoyable experience for all",
+      "loved the frame quality sm",
+      "def a five star photobooth",
+      "pics look incredible on paper",
+      "gr8 vibes n awesome prints",
+      "thx for the sweet pictures",
+      "super creative n fun booth",
+      "vry clean and organized setup",
+      "pics printed out super quick",
+      "gr8 choice for our celebration",
+      "thx for the great photo favors",
+      "vry professional service all evening",
+      "loved taking photos sm",
+      "def our best party investment",
+      "pics look stunning in frames",
+      "gr8 props for silly poses",
+      "thx for the unforgettable night",
+      "vry accommodating team from CheesyClicks",
+      "AMAZING EXPERIENCE!",
+      "SO MUCH FUN",
+      "10/10 PHOTOBOOTH!",
+      "BEST PHOTO BOOTH EVER",
+      "LITERAL PERFECTION",
+      "LOVED EVERY SECOND",
+      "UNREAL PHOTO QUALITY!",
+      "SO GLAD WE BOOKED",
+      "BEST PARTY ENTERTAINMENT!",
+      "SUCH AN AMAZING VIBE",
+      "EPIC EVENT MEMORIES!",
+      "EVERYONE LOVED IT",
+      "BEST PHOTO STRIPS EVER!",
+      "HIGHLY RECOMMEND CHEESYCLICKS",
+      "PURE JOY AND LAUGHTER",
+      "SUPER FUN PHOTOBOOTH!",
+      "TOP TIER SERVICE!",
+      "OUTSTANDING EXPERIENCE!",
+      "GORGEOUS PHOTO PRINTS!",
+      "TOTAL HIT AT OUR PARTY!",
+      "UNBELIEVABLE PHOTO CLARITY!",
+      "THE BEST TIME EVER!",
+      "STUNNING PRINTS AND PROPS!",
+      "LOVED THE TEAM!",
+      "SUCH A BLAST!",
+      "SO MUCH LAUGHTER!",
+      "PERFECT PARTY KEEPSAKES!",
+      "AMAZING VIBES ALL NIGHT!",
+      "COULD NOT BE HAPPIER!",
+      "FIVE STARS ALL THE WAY!",
+      "THE PROPS WERE HILARIOUS!",
+      "CRYSTAL CLEAR PHOTO PRINTS!",
+      "WHOLE FAMILY LOVED IT!",
+      "BEST PHOTOBOOTH CREW EVER!",
+      "IN LOVE WITH OUR PRINTS!",
+      "EVERYONE HAD A BLAST!",
+      "Staff was super sweet.",
+      "attendants were so helpful!",
+      "loved the friendly host",
+      "The crew was amazing.",
+      "Super polite booth staff",
+      "host helped everyone pose",
+      "Attendant was so patient!",
+      "Warm and helpful team",
+      "staff brought great energy",
+      "Loved the smiling attendants.",
+      "Super kind booth crew",
+      "host was so welcoming!",
+      "Caring staff all evening.",
+      "Attendant was pure joy",
+      "loved the helpful staff!",
+      "Crew made us smile.",
+      "Super attentive booth attendants",
+      "staff kept things moving!",
+      "Wonderful host all night.",
+      "Courteous team from CheesyClicks",
+      "the staff made everyone feel so comfortable!",
+      "Super helpful attendants who assisted every single guest.",
+      "Our booth host was remarkably polite and patient",
+      "the crew helped us find the best props",
+      "Loved how sweet and organized the staff was.",
+      "Attendants kept the line moving with big smiles",
+      "the host was always ready with fun poses",
+      "Warm and welcoming staff throughout our entire party.",
+      "The team made taking photos so completely effortless",
+      "attendant took great care of our elderly guests",
+      "Super friendly crew that brought such good energy.",
+      "Loved how patient the team was with kids",
+      "the booth attendants went above and beyond tonight",
+      "Polite staff who handed out prints with smiles.",
+      "The host made everyone laugh before every shot",
+      "always smiling and super helpful all evening long",
+      "The staff made our celebration feel extra special.",
+      "Incredibly accommodating team from start to finish",
+      "the attendants were attentive, fun, and very professional",
+      "Loved having such a helpful and cheerful host.",
+      "colors popped so beautifully",
+      "Loved the photo clarity.",
+      "prints came out fast!",
+      "sharp photos every time",
+      "Super vibrant glossy prints.",
+      "The print quality rocked",
+      "high resolution photo strips",
+      "Prints looked super crisp!",
+      "Loved the picture detail",
+      "gorgeous glossy photo paper",
+      "Flawless picture clarity tonight.",
+      "Prints were totally stunning",
+      "super sharp camera quality",
+      "Photos looked so professional!",
+      "Crisp images on print",
+      "colors looked so alive",
+      "Photo strips printed fast!",
+      "Loved the picture lighting",
+      "super clear group photos",
+      "Every single photo strip came out crystal clear!",
+      "The print quality was truly second to none",
+      "super crisp prints with vivid and rich colors",
+      "Loved how fast the photo strips printed out.",
+      "Everyone was amazed by the razor sharp clarity",
+      "the physical prints looked even better in person",
+      "High definition photos that look completely professional.",
+      "The lighting made everyone look so photogenic tonight",
+      "thick glossy paper that feels like luxury stock",
+      "Photos came out totally dry and smudge free.",
+      "The prints turned out sharp, bright, and flawless",
+      "loved taking home such clear and vibrant strips",
+      "Impressive resolution that captured every single detail.",
+      "Picture quality that exceeded our highest expectations",
+      "flawless lighting inside the booth eliminated all shadows",
+      "Our photo strips look so clear and stunning.",
+      "The ink dried instantly with beautiful glossy finish",
+      "Colors on the photo strips were incredibly vibrant.",
+      "Everyone praised the gorgeous photo clarity tonight",
+      "loved the magnetic frames!",
+      "Sturdy frames for photos.",
+      "Magnets look great on fridge",
+      "classy frames to keep",
+      "Frames protect our prints.",
+      "loved the sleek frames!",
+      "magnetic frames were awesome",
+      "Great keepsakes with frames.",
+      "Sturdy photo strip holders",
+      "frames were super classy",
+      "Loved the acrylic frames!",
+      "Magnets stick firmly on fridges",
+      "frames made great favors",
+      "Super durable picture frames.",
+      "magnetic backing was genius!",
+      "clean frames for photos",
+      "Frames keep memories safe.",
+      "loved displaying framed strips!",
+      "solid frames for prints",
+      "Frames looked so sleek.",
+      "the magnetic photo frames look amazing on fridges!",
+      "loved having sturdy frames to protect our pictures",
+      "The magnetic frames made the best party favors.",
+      "Super classy frames that showcase the photo strips",
+      "our guests loved taking home framed photo strips",
+      "Sturdy magnetic frames that will last for years.",
+      "The frames added such a polished finishing touch",
+      "loved sticking our favorite photo strips on refrigerators",
+      "Acrylic frames that keep the photo strips safe.",
+      "The magnetic backing keeps our pictures firmly attached",
+      "frames made these photo strips feel extra special",
+      "Guests were so excited about the magnetic frames.",
+      "Classy frames that look wonderful on our desks",
+      "the sturdy frames protect pictures from getting bent",
+      "Loved how securely the magnetic frames hold prints.",
+      "The photo frames made our memories last longer",
+      "protective frames that highlight every single photo strip",
+      "Super durable frames that guests will treasure forever.",
+      "Such an elegant frame to display our pictures",
+      "high quality frames that look gorgeous on display",
+      "Hilarious hats and glasses!",
+      "Loved the custom props",
+      "props made us laugh!",
+      "Custom name signs rocked.",
+      "Funny signs for photos",
+      "props kept things lively!",
+      "Loved the quirky accessories.",
+      "Custom lettering looked great",
+      "super entertaining photo props",
+      "Huge selection of props!",
+      "Props brought out laughs",
+      "wacky glasses were fun",
+      "Custom name props slayed!",
+      "Loved holding fun signs",
+      "props for every pose",
+      "Hilarious props for everyone!",
+      "Clean and sturdy props",
+      "custom props felt special",
+      "Props made photos hilarious!",
+      "Witty signs for pictures",
+      "Loved posing with our personalized name signs tonight.",
+      "Hilarious props that had everyone in absolute stitches",
+      "the custom lettering made our pictures look iconic",
+      "So many funny hats, glasses, and witty signs.",
+      "Custom props matched our party theme so nicely",
+      "the props kept our guests laughing and posing",
+      "Holding our custom name signs was so fun.",
+      "The prop table was clean and fully stocked",
+      "personalized props gave our photos such unique charm",
+      "Wacky props that brought out everyone's silly side.",
+      "Loved how creative and sturdy the props were",
+      "custom name props made every single photo personal",
+      "Guests loved trying on different silly party hats.",
+      "The custom signage was crafted with exceptional detail",
+      "hilarious props that made group photos so lively",
+      "Everyone wanted photos with the personalized name cutouts.",
+      "Props were in pristine condition all evening long",
+      "the custom name props turned out totally gorgeous",
+      "Super entertaining props that everyone thoroughly enjoyed.",
+      "whole family fit inside!",
+      "fun group photo session",
+      "Spacious booth for groups.",
+      "kids loved the photobooth!",
+      "family fun all night",
+      "Great shots with friends.",
+      "loved the group photos!",
+      "grandparents had a blast",
+      "Plenty of room inside.",
+      "fun pictures with cousins!",
+      "family smiles captured forever",
+      "Booth fit our crew.",
+      "group posing was easy!",
+      "fun memories with friends",
+      "Loved posing together today.",
+      "family pictures turned great!",
+      "room for big groups",
+      "Kids laughed so much.",
+      "great group party activity!",
+      "fun moments with everyone",
+      "Great memories made with our closest family members.",
+      "The camera angle captured everyone in large groups",
+      "hilarious group poses with all our favorite people",
+      "Plenty of room for creative and silly poses.",
+      "The booth brought our whole family together tonight",
+      "loved seeing the kids and grandparents laugh together",
+      "Spacious booth setup that accommodated our entire crew.",
+      "Family laughter filled the photobooth all evening long",
+      "Our friends could not stop taking group photos.",
+      "The perfect activity for guests of all ages",
+      "we took so many sweet family pictures tonight",
+      "Booth fit our large circle of friends easily.",
+      "Capturing three generations in one fun photo strip",
+      "everyone in our group had a complete blast",
+      "Group pictures that will hang on our walls.",
+      "So much fun squeezing in for group shots",
+      "perfect for our wedding!",
+      "Birthday party highlight tonight.",
+      "Loved our reception photos",
+      "wedding guests loved it!",
+      "Birthday memories made sweeter.",
+      "Best wedding party activity",
+      "celebration was so special!",
+      "Loved our anniversary photos.",
+      "Perfect birthday party entertainment",
+      "wedding memories captured beautifully",
+      "Guests raved about it!",
+      "Celebration highlight for sure",
+      "sweet wedding party keepsakes",
+      "Birthday party was epic!",
+      "Made our wedding fun",
+      "special memories from tonight!",
+      "Anniversary party was memorable.",
+      "Celebration made totally unforgettable",
+      "wedding photo strips rocked!",
+      "Sweet celebration moments captured.",
+      "the photobooth was the highlight of our wedding!",
+      "The sweetest keepsake from our special wedding reception.",
+      "Made our birthday party twenty times more fun",
+      "The photobooth kept our reception lively and entertaining.",
+      "Such a magical addition to our wedding celebration",
+      "our birthday celebration was made completely unforgettable tonight",
+      "Wedding guests took home memories they truly loved.",
+      "The best entertainment decision for our big party",
+      "created unforgettable memories at our wedding celebration tonight",
+      "Every birthday guest left with sweet photo keepsakes.",
+      "a must-have entertainment feature for any birthday party",
+      "Our wedding reception was made so much livelier.",
+      "Captured the happiest moments of our special day",
+      "birthday party memories that will last a lifetime",
+      "The photobooth stole the show at our reception.",
+      "Unforgettable souvenir from our dream wedding celebration",
+      "Super quick print delivery.",
+      "Sleek and modern setup",
+      "booth looked so classy!",
+      "Fast service all evening.",
+      "Neat and tidy station",
+      "quick prints without waiting!",
+      "Attractive backdrop matched theme.",
+      "Smooth service from start",
+      "compact booth with room!",
+      "Fast and reliable booth.",
+      "Setup looked totally stunning",
+      "zero waiting for prints!",
+      "Clean station and equipment.",
+      "Fast photobooth printing speed",
+      "modern booth that impressed",
+      "Seamless setup right on time.",
+      "super fast print output!",
+      "clean and organized setup",
+      "Sleek booth matched decor.",
+      "Effortless photobooth experience today",
+      "the photobooth setup looked sleek and very modern",
+      "Instant photo printing kept lines moving so fast.",
+      "The backdrop matched our party decor so beautifully",
+      "super clean equipment and zero messy cords around",
+      "Everything was set up promptly before guests arrived.",
+      "The booth was compact yet super spacious inside",
+      "fast and efficient service with immediate print delivery",
+      "Our guests loved how quick the prints came.",
+      "The sleek photobooth enclosure looked very high end",
+      "hassle free experience with lightning fast photo prints",
+      "The attractive setup drew guests over all night.",
+      "Spotless photobooth station that looked totally professional tonight",
+      "quick printing ensured that nobody had to wait",
+      "The backdrop colors looked amazing in every picture.",
+      "Effortless touchscreen interface that was simple to use",
+      "prompt service and fast prints made everything easy",
+      "Fast printing allowed everyone to take multiple strips",
+      "clean and elegant photobooth presentation from CheesyClicks",
+      "Everything ran like clockwork with zero technical hiccups.",
+      "So much fun together",
+      "keepsakes we will treasure!",
+      "Loved posing with friends.",
+      "Tangible memories to keep",
+      "friends laughed so hard!",
+      "Keepsakes for every guest.",
+      "Party moments captured forever",
+      "fun times with friends!",
+      "Sweet souvenir photo strips.",
+      "Loved laughing with friends",
+      "keepsakes from an epic night",
+      "Best photo keepsakes ever!",
+      "Friends loved every pose",
+      "cherished photo strips forever",
+      "Pure fun with friends!",
+      "Lasting party memory favors",
+      "friends took silly photos",
+      "Keepsakes to look back on.",
+      "fun times all around!",
+      "sweet keepsakes from party",
+      "Our friends had the absolute best time posing!",
+      "Photo strips that we will treasure for years",
+      "Gave every single guest memories they can keep.",
+      "Loved looking back at our silly friend photos",
+      "the photo strips make the sweetest party souvenirs",
+      "Laughter and silly poses with all our friends.",
+      "our friend group had non stop fun posing",
+      "Unforgettable moments shared with our very best friends",
+      "keepsakes that brought our guests so many smiles",
+      "Such a joyful way to document our celebration.",
+      "Taking photos with friends was the absolute highlight",
+      "sweet keepsakes that our friends loved taking home",
+      "We made the funniest memories with our friends.",
+      "Cherished keepsakes that captured the true party spirit",
+      "friends could not get enough of the photobooth",
+      "Wonderful photo keepsakes to remember this party by.",
+      "The best way to celebrate friendship and laughter",
+      "Could this photobooth get any better?",
+      "Need the most fun party entertainment?",
+      "Who does not love instant photo strips?",
+      "Want unforgettable memories from your party?",
+      "Could our photo strips be any cuter?",
+      "How awesome were those custom props?",
+      "Looking for the best party photo booth?",
+      "Ready for the most fun group poses?",
+      "Can every party have this photobooth?",
+      "Who knew photo booths were this fun?",
+      "Could not have asked for better photos!!",
+      "The photobooth exceeded all our expectations!!",
+      "Everyone loved taking photos so much!!",
+      "Such an incredible photobooth for our party!!",
+      "The photo prints were absolute perfection!!",
+      "Loved every single second taking funny photos!!",
+      "Our guests were obsessed with the booth!!",
+      "The best photobooth decision we ever made!!",
+      "Such stunning photo strips to keep forever!!",
+      "CheesyClicks made our party so incredibly memorable!!",
+      "Loved the whole photo booth vibe",
+      "super fun memories with close friends",
+      "Photos came out clear and bright.",
+      "Great party favor to take home",
+      "everyone enjoyed posing with funny props",
+      "Clean modern booth with awesome lighting.",
+      "Photo strips we will always cherish",
+      "super easy to use and fast",
+      "Loved having physical prints right away.",
+      "Such a great addition to the celebration",
+      "friendly host and great photo clarity",
+      "Taking photos was so much fun tonight.",
+      "Crisp photo strips that look amazing",
+      "guests loved the silly photo accessories",
+      "Great entertainment from beginning to end.",
+      "Sweet photo memories with our loved ones",
+      "super neat setup with fast printing",
+      "Everyone had big smiles all evening.",
+      "The photo booth was pure magic",
+      "loved every single photo strip printed",
+      "total perfection",
+      "so vibrant",
+      "instant keepsake",
+      "epic entertainment",
+      "smiling guests",
+      "super stylish",
+      "flawless clarity",
+      "classy vibe",
+      "stellar experience",
+      "so awesome",
+      "pure charm",
+      "party magic",
+      "happy faces",
+      "great captures",
+      "so memorable",
+      "unreal fun",
+      "top service",
+      "hits different fr",
+      "sooo aesthetically pleasing",
+      "vibes were 10/10",
+      "slayed our anniversary photos",
+      "obsessed with the ring light",
+      "pure main character vibes",
+      "fr the best booth everrr",
+      "omggg so fun",
+      "soooo many cute props",
+      "literally the best favor",
+      "lowkey the coolest booth",
+      "it's giving celebrity party",
+      "10/10 picture clarity fr",
+      "core memory with my bestie",
+      "slayed the party entertainment",
+      "vibes were so immaculate",
+      "obsessed with these photo strips!",
+      "fr such an awesome setup",
+      "too fun fr",
+      "the booth slayed all night",
+      "thx for the gr8 vibes",
+      "pics look vry professional",
+      "super fun n memorable",
+      "gr8 service from start to finish",
+      "loved the props sm!!",
+      "fave part of the party",
+      "thx for the amazing photo strips",
+      "pics turned out vry clear",
+      "def booking for next event",
+      "gr8 memories with great people",
+      "super easy n quick prints",
+      "thx for such a fun time",
+      "vry stylish booth setup tonight",
+      "loved our wedding strips sm",
+      "def the coolest party idea",
+      "THE BEST PHOTOBOOTH EVER!",
+      "SO IN LOVE WITH OUR PICS",
+      "ABSOLUTELY LOVED IT!",
+      "SUCH AN INCREDIBLE PARTY FAVOR!",
+      "TOTALLY WORTH EVERY PENNY!",
+      "EPIC PHOTO STRIPS!",
+      "such an effortless experience",
+      "prints look stunning on fridge",
+      "photos turned out gorgeous!",
+      "everyone loved the booth",
+      "super fun celebration activity",
+      "great lighting and clarity",
+      "kids had so much fun!",
+      "the sweetest event souvenir",
+      "loved all the silly hats",
+      "prints came out super crisp",
+      "seamless setup and service",
+      "photo strips are so cute!",
+      "unforgettable times with family",
+      "creative and funny props",
+      "picture clarity was amazing",
+      "guests kept coming back!",
+      "the best party souvenir",
+      "loved every single moment!",
+      "so glad we chose CheesyClicks",
+      "pure entertainment all night",
+      "hilarious photos with friends",
+      "high quality photo strips!",
+      "wonderful staff and service",
+      "the booth was super clean",
+      "memories made with laughter",
+      "the photo booth was an absolute party highlight",
+      "everyone loved having real prints to take home",
+      "the lighting in the booth was completely perfect",
+      "hands down the most entertaining photobooth around",
+      "an incredible keepsake from our unforgettable party celebration",
+      "loved the ring light lighting",
+      "super fun party souvenir strips",
+      "the customized signs were so cute",
+      "everyone was smiling in the booth",
+      "great photos with the best crew",
+      "photobooth was an absolute dream",
+      "pure joy captured on film",
+      "the sweetest memory from tonight",
+      "our guests could not get enough",
+      "hilarious photo poses with props",
+      "the physical strips turned out gorgeous",
+      "such a memorable party addition",
+      "the booth made our celebration shine",
+      "super fast and lovely service",
+      "sturdy photo frames for all guests",
+      "kids and adults had so much fun",
+      "the clearest photo strips we have seen",
+      "photobooth memories we will always keep",
+      "loved all the goofy party props",
+      "the team took care of every detail",
+      "sweetest keepsake from a magical night",
+      "our wedding photos look amazing",
+      "super clean booth with zero mess",
+      "everyone raved about the photo strips",
+      "taking pictures was so breezy",
+      "the best way to capture smiles",
+      "gorgeous glossy strips for our guests",
+      "such an engaging activity for all",
+      "great energy from the entire booth team",
+      "loved our birthday photo memories",
+      "the frames keep our photos safe",
+      "super entertaining from start to end",
+      "memories captured with genuine laughter",
+      "loved holding custom name cutouts",
+      "the booth was a massive success",
+      "high definition photos printed fast"
+    ];
+
+    // Destination Google Review Link
+    const GOOGLE_REVIEW_URL = "https://g.page/r/CZZqSaS0PsMOEBE/review";
+
+    // DOM Elements
+    const reviewTextarea = document.getElementById("reviewText");
+    const rotateDraftBtn = document.getElementById("rotateDraftBtn");
+    const copyPostBtn = document.getElementById("copyPostBtn");
+
+    // =========================================================================
+    // 2. TEXT FORMATTING LOGIC
+    // - Preserves original capitalization, spelling, contractions, and punctuation.
+    // - If a review has been supplied without ending punctuation, does NOT automatically add a full stop.
+    // - Trims extraneous whitespace while preserving the customer's exact formatting.
+    // =========================================================================
+    function formatReviewDraft(draft) {
+      if (typeof draft !== "string") return "";
+      // Clean unnecessary leading/trailing whitespace only, preserving original punctuation & casing
+      return draft.trim();
+    }
+
+    // =========================================================================
+    // 3. NON-REPEATING SHUFFLE DECK ALGORITHM
+    // =========================================================================
+    let deck = [];
+    let deckIndex = -1;
+    let lastDraft = REVIEW_DRAFTS[0];
+
+    function createShuffledDeck() {
+      const indices = REVIEW_DRAFTS.map((_, i) => i);
+      // Fisher-Yates shuffle
+      for (let i = indices.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [indices[i], indices[j]] = [indices[j], indices[i]];
+      }
+      // Guarantee the first item of a new cycle is not identical to the last shown draft
+      if (indices.length > 1 && REVIEW_DRAFTS[indices[0]] === lastDraft) {
+        [indices[0], indices[1]] = [indices[1], indices[0]];
+      }
+      return indices;
+    }
+
+    function getNextDraft() {
+      if (deck.length === 0 || deckIndex >= deck.length - 1) {
+        deck = createShuffledDeck();
+        deckIndex = 0;
+      } else {
+        deckIndex++;
+      }
+      const rawDraft = REVIEW_DRAFTS[deck[deckIndex]];
+      const formattedDraft = formatReviewDraft(rawDraft);
+      lastDraft = rawDraft;
+      return formattedDraft;
+    }
+
+    // Initialize deck
+    deck = createShuffledDeck();
+
+    // Rotate Button Click Listener
+    rotateDraftBtn.addEventListener("click", () => {
+      rotateDraftBtn.classList.add("spinning");
+      setTimeout(() => {
+        rotateDraftBtn.classList.remove("spinning");
+      }, 350);
+
+      const nextDraft = getNextDraft();
+      reviewTextarea.value = nextDraft;
+      reviewTextarea.focus();
+    });
+
+    // =========================================================================
+    // 3. RELIABLE CLIPBOARD COPY & NAVIGATION (PRESERVING USER GESTURE)
+    // =========================================================================
+    function copyToClipboard(text) {
+      let copied = false;
+
+      // 1. Synchronous execCommand copy preserves the immediate user gesture
+      try {
+        const tempEl = document.createElement("textarea");
+        tempEl.value = text;
+        tempEl.setAttribute("readonly", "");
+        tempEl.style.position = "fixed";
+        tempEl.style.left = "-9999px";
+        tempEl.style.top = "0";
+        document.body.appendChild(tempEl);
+        tempEl.focus();
+        tempEl.select();
+        tempEl.setSelectionRange(0, 99999);
+        copied = document.execCommand("copy");
+        document.body.removeChild(tempEl);
+      } catch (err) {
+        console.warn("execCommand fallback copy error:", err);
+      }
+
+      // 2. Dispatch modern Clipboard API without blocking
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(text).catch((err) => {
+          console.warn("navigator.clipboard.writeText error:", err);
+        });
+      }
+
+      return copied;
+    }
+
+    copyPostBtn.addEventListener("click", () => {
+      const currentText = reviewTextarea.value.trim();
+
+      // Copy exact current contents
+      copyToClipboard(currentText);
+
+      // Instant button feedback
+      copyPostBtn.classList.add("copied");
+
+      // Synchronously open Google Review URL to preserve user gesture
+      let openedWindow = null;
+      try {
+        openedWindow = window.open(GOOGLE_REVIEW_URL, "_blank", "noopener,noreferrer");
+      } catch (e) {
+        openedWindow = null;
+      }
+
+      // Fallback: If new tab was blocked or unavailable, redirect directly
+      if (!openedWindow || openedWindow.closed || typeof openedWindow.closed === "undefined") {
+        window.location.href = GOOGLE_REVIEW_URL;
+      }
+    });
+  </script>
+</body>
+
+</html>
